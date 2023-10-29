@@ -1,0 +1,27 @@
+FROM ubuntu:20.04
+
+ARG UID=1000
+ARG GID=1000
+ARG UNAME=app
+ARG GNAME=app
+
+RUN apt-get update && apt-get --no-install-recommends install -y \
+    curl \
+    wget \
+    ca-certificates \
+    git \
+    build-essential
+
+ENV GOLANG_VERSION 1.21.3
+RUN wget -q https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz && \
+    rm go${GOLANG_VERSION}.linux-amd64.tar.gz
+
+ENV PATH=${PATH}:/usr/local/go/bin
+
+RUN groupadd -g ${GID} ${GNAME} && \
+    useradd -m -s /bin/bash -u ${UID} -g ${GID} ${UNAME}
+USER ${UNAME}
+
+WORKDIR /app
+CMD ["bash"]
